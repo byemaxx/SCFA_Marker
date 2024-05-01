@@ -18,7 +18,7 @@ class SCFA_Marker(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         # resize
         self.resize(600, 400)
-        self.setWindowTitle("SCFA Marker v1.1")
+        self.setWindowTitle("SCFA Marker v1.2")
         
         self.lineEdit_file_path = self.make_line_edit_drag_drop(self.lineEdit_file_path, mode='file')
         self.lineEdit_save_dir_path = self.make_line_edit_drag_drop(self.lineEdit_save_dir_path, mode='folder')
@@ -198,14 +198,14 @@ class SCFA_Marker(QMainWindow, Ui_MainWindow):
             if self.checkBox_split_by_group.isChecked():
                 res_dict = self.process_group(group_dict)
                 if res_dict:
-                    save_path_grouped = os.path.join(self.save_path, f"GROUP_SHEETS_{original_name}.xlsx")
+                    save_path_grouped = os.path.join(self.save_path, f"GROUPED_{original_name}.xlsx")
                     with pd.ExcelWriter(save_path_grouped) as writer:
                         for sheet_name, dft in res_dict.items():
                             dft.to_excel(writer, sheet_name=sheet_name)
                         
 
             # messagebox.showinfo("Success", f"File processed and saved to [{save_path}]")
-            msg = f"File processed and saved to [{save_path_marked}]"
+            msg = f"File processed and saved to:\n{self.save_path}"
             if len(self.faild_group) > 0:
                 self.faild_group = list(set(self.faild_group))
                 msg += f"\n\nThe following groups are not found in the file:\n{', '.join(self.faild_group)}"
