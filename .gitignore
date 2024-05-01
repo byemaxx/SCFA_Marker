@@ -2,3 +2,5 @@ SCFA_Marker.ui
 Test/
 *pyc
 __pycache__/
+build/
+SCFA_Marker.spec

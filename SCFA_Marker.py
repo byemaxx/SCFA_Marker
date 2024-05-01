@@ -30,7 +30,8 @@ class SCFA_Marker(QMainWindow, Ui_MainWindow):
         self.filename = ""
         self.save_path = ""
         self.group_list = []
-        
+        self.faild_group = []
+
         
     
     def on_pushButton_open_file(self):
@@ -75,17 +76,25 @@ class SCFA_Marker(QMainWindow, Ui_MainWindow):
         group_list = [x.strip() for x in group_list]
         res_dict = {}
 
-        for group, dft in group_dict.items():
-            if group == 'All':
+        self.faild_group = []
+        
+        for sheet, dft in group_dict.items():
+            if sheet == 'All':
                 continue
-            print(group)
-            dft = dft[["Replicate", "Quantification"]].copy()  # 使用副本操作来避免警告
-            for indi in group_list:
-                dft_i = dft[dft["Replicate"].str.contains(indi)].copy()  # 对筛选结果创建副本
+            print(sheet)
+            dft = dft[["Replicate", "Quantification"]].copy() 
+              
+            
+            for individual in group_list:
+                dft_i = dft[dft["Replicate"].str.contains(individual)].copy()
+                if dft_i.empty:
+                    print(f"Group {individual} not found in {sheet}")
+                    self.faild_group.append(individual)
+                    continue
                 # 用 split 方法分割 "Replicate" 列，并创建新列
-                split_df = dft_i["Replicate"].str.split(f'_{indi}_', expand=True)
+                split_df = dft_i["Replicate"].str.split(f'_{individual}_', expand=True)
                 dft_i['Group'], dft_i["Replicate"] = split_df[0], split_df[1]
-                dft_i['Individual'] = indi
+                dft_i['Individual'] = individual
                 dft_i["Group"] = dft_i["Group"].str.replace("d_", "") + "_" + dft_i['Individual']
                 dft_i = dft_i.pivot(index='Replicate', columns='Group', values='Quantification')
                 dft_i.index.name = None
@@ -103,7 +112,7 @@ class SCFA_Marker(QMainWindow, Ui_MainWindow):
                 
                 
                 # 保存到字典中
-                res_dict[f"{group}_{indi}"] = dft_i_final
+                res_dict[f"{sheet}_{individual}"] = dft_i_final
         
         return res_dict
 
@@ -196,7 +205,12 @@ class SCFA_Marker(QMainWindow, Ui_MainWindow):
                         
 
             # messagebox.showinfo("Success", f"File processed and saved to [{save_path}]")
-            QtWidgets.QMessageBox.information(self, 'Success', f"File processed and saved to [{self.save_path}]")
+            msg = f"File processed and saved to [{save_path_marked}]"
+            if len(self.faild_group) > 0:
+                self.faild_group = list(set(self.faild_group))
+                msg += f"\n\nThe following groups are not found in the file:\n{', '.join(self.faild_group)}"
+            
+            QtWidgets.QMessageBox.information(self, 'Done', msg)
         except Exception as e:
             # show exact error location
             import traceback
