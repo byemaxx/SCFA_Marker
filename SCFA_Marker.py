@@ -18,7 +18,7 @@ class SCFA_Marker(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         # resize
         self.resize(600, 400)
-        self.setWindowTitle("SCFA Marker v1.2")
+        self.setWindowTitle("SCFA Marker v1.3")
         
         self.lineEdit_file_path = self.make_line_edit_drag_drop(self.lineEdit_file_path, mode='file')
         self.lineEdit_save_dir_path = self.make_line_edit_drag_drop(self.lineEdit_save_dir_path, mode='folder')
@@ -82,7 +82,10 @@ class SCFA_Marker(QMainWindow, Ui_MainWindow):
             if sheet == 'All':
                 continue
             print(sheet)
-            dft = dft[["Replicate", "Quantification"]].copy() 
+            dft = dft.copy()
+            # fill na to Quantification if Quantification is Out
+            dft.loc[dft["Standard Status"] == "Out", "Quantification"] = ""
+            dft = dft[["Replicate", "Quantification"]]
               
             
             for individual in group_list:
@@ -100,16 +103,19 @@ class SCFA_Marker(QMainWindow, Ui_MainWindow):
                 dft_i.index.name = None
                 dft_i = dft_i[sorted(dft_i.columns, key=lambda x: control_str in x if x else False, reverse=True)]
 
-                # 创建60倍的数据行
-                dft_i_2 = dft_i * 60
-                cols_name = dft_i_2.columns
-                # 构造空行和标题行
-                titles_row = pd.DataFrame([cols_name], columns=dft_i_2.columns)
-                spacer_row = pd.DataFrame([[""] * dft_i_2.shape[1]], columns=dft_i_2.columns)
-                
-                # 合并原始数据框、空行、标题行和60倍数据
-                dft_i_final = pd.concat([dft_i, spacer_row, titles_row, dft_i_2])
-                
+                create_60x = False
+                if create_60x:
+                    # 创建60倍的数据行
+                    dft_i_2 = dft_i * 60
+                    cols_name = dft_i_2.columns
+                    # 构造空行和标题行
+                    titles_row = pd.DataFrame([cols_name], columns=dft_i_2.columns)
+                    spacer_row = pd.DataFrame([[""] * dft_i_2.shape[1]], columns=dft_i_2.columns)
+                    
+                    # 合并原始数据框、空行、标题行和60倍数据
+                    dft_i_final = pd.concat([dft_i, spacer_row, titles_row, dft_i_2])
+                else:
+                    dft_i_final = dft_i
                 
                 # 保存到字典中
                 res_dict[f"{sheet}_{individual}"] = dft_i_final
