@@ -4,3 +4,4 @@ Test/
 __pycache__/
 build/
 SCFA_Marker.spec
+test.ipynb
