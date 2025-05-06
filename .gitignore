@@ -6,3 +6,4 @@ build/
 SCFA_Marker.spec
 test.ipynb
 dist/
+venv/
