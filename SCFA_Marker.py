@@ -74,15 +74,59 @@ class ModernButton(QPushButton):
             }
         """)
 
+class AboutDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("About SCFA Marker")
+        self.setFixedSize(400, 300)
+        
+        layout = QVBoxLayout(self)
+        
+        title_label = QLabel("SCFA Marker")
+        title_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #4CAF50;")
+        title_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title_label)
+        
+        description = QLabel(
+            "SCFA Marker is a tool for processing and analyzing Short-Chain Fatty Acid (SCFA) data.\n\n"
+            "Features:\n"
+            "• Process CSV files with SCFA data\n"
+            "• Fully compatible with CSV files exported from Skyline.\n"
+            "• Mark sample status based on standard ranges\n"
+            "• Support for group analysis\n"
+            "• Batch processing capability\n"
+            "• Customizable parameters\n\n"
+        )
+        description.setWordWrap(True)
+        description.setStyleSheet("font-size: 12px; margin: 10px;")
+        layout.addWidget(description)
+        
+        github_btn = ModernButton("Open GitHub Project")
+        github_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://github.com/byemaxx/SCFA_Marker")))
+        layout.addWidget(github_btn)
+        
+        author_label = QLabel("Author: Qing Wu")
+        author_label.setStyleSheet("font-size: 12px; color: #666;")
+        author_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(author_label)
+        
+        # 设置样式
+        self.setStyleSheet("""
+            QDialog {
+                background-color: white;
+            }
+            QLabel {
+                margin: 5px;
+            }
+        """)
+
 class SCFA_Marker(QMainWindow):
     def __init__(self):
         super().__init__()
-        # 设置标准图标为窗口图标
         icon = QApplication.style().standardIcon(QStyle.SP_DialogHelpButton)
         self.setWindowIcon(icon)
         self.init_ui()
         self.init_variables()
-        # 监听文件路径变化，自动设置输出目录
         self.lineEdit_file_path.textChanged.connect(self._auto_set_save_dir)
 
     def init_variables(self):
@@ -92,14 +136,19 @@ class SCFA_Marker(QMainWindow):
         self.faild_group = []
 
     def init_ui(self):
-        self.setWindowTitle("SCFA Marker v1.5")
-        self.setMinimumSize(800, 600)
+        self.setWindowTitle("SCFA Marker v1.6")
+        self.resize(800, 600)
 
-        # 添加菜单栏和Help菜单
+        # 添加菜单栏
         menubar = self.menuBar()
+        
+        # Help菜单
         help_menu = menubar.addMenu('Help')
-        open_github_action = help_menu.addAction('Open GitHub')
-        open_github_action.triggered.connect(self.open_help)
+
+        
+        # About菜单
+        about_action = help_menu.addAction('About')
+        about_action.triggered.connect(self.show_about)
 
         # Main widget and layout
         main_widget = QWidget()
@@ -653,10 +702,10 @@ class SCFA_Marker(QMainWindow):
             if os.path.isfile(first_file):
                 self.lineEdit_save_dir_path.setText(os.path.dirname(first_file))
 
-    def open_help(self):
-        """Open GitHub repository in default browser"""
-        url = QUrl("https://github.com/byemaxx/SCFA_Marker")
-        QDesktopServices.openUrl(url)
+
+    def show_about(self):
+        dialog = AboutDialog(self)
+        dialog.exec_()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

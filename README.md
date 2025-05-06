@@ -2,6 +2,8 @@
 
 SCFA Marker is a user-friendly tool for batch processing and marking SCFA (Short-Chain Fatty Acids) quantification results from CSV files. It provides a modern GUI, flexible parameter settings, and clear output for scientific data analysis.
 
+**It is fully compatible with CSV files exported from [Skyline](https://skyline.ms/), a widely used mass spectrometry data analysis software.**
+
 ## Main Features
 - **Batch Processing**: Select and process multiple CSV files at once.
 - **Dilution Factor**: Apply a user-defined dilution factor to all quantification results.
@@ -9,6 +11,7 @@ SCFA Marker is a user-friendly tool for batch processing and marking SCFA (Short
 - **Group Splitting**: Optionally split results by group and generate grouped Excel sheets.
 - **Modern GUI**: Intuitive PyQt5 interface with drag-and-drop and progress dialog.
 - **Clear Output**: Generates Excel files with marked and grouped results, and a scrollable result summary.
+- **Skyline Compatibility**: Directly supports the typical output format of Skyline, making it easy to process your mass spectrometry quantification results.
 
 ## Parameter Definitions & Effects
 | Parameter           | Definition                                                                 | Effect on Results                                                                                 |
@@ -21,6 +24,8 @@ SCFA Marker is a user-friendly tool for batch processing and marking SCFA (Short
 | Control Group       | The group to be prioritized in output.                                     | This group will appear first in grouped results.                                                  |
 
 ## Example Input Table
+
+> **Note:** The following table format is compatible with Skyline CSV exports.
 
 | Molecule    | Replicate | Quantification | Sample Type | Analyte Concentration | Exclude From Calibration |
 |-------------|-----------|---------------|-------------|----------------------|-------------------------|
