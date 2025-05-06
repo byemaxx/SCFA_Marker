@@ -6,7 +6,8 @@ from PyQt5.QtWidgets import (
     QGroupBox, QCheckBox, QDoubleSpinBox, QSizePolicy, QProgressDialog, QDialog, QTextEdit
 )
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import  QDragEnterEvent, QDropEvent, QDesktopServices
+from PyQt5.QtGui import  QDragEnterEvent, QDropEvent, QDesktopServices, QIcon
+from PyQt5.QtWidgets import QStyle
 
 import pandas as pd
 import openpyxl
@@ -76,6 +77,9 @@ class ModernButton(QPushButton):
 class SCFA_Marker(QMainWindow):
     def __init__(self):
         super().__init__()
+        # 设置标准图标为窗口图标
+        icon = QApplication.style().standardIcon(QStyle.SP_DialogHelpButton)
+        self.setWindowIcon(icon)
         self.init_ui()
         self.init_variables()
         # 监听文件路径变化，自动设置输出目录
@@ -88,7 +92,7 @@ class SCFA_Marker(QMainWindow):
         self.faild_group = []
 
     def init_ui(self):
-        self.setWindowTitle("SCFA Marker v1.4")
+        self.setWindowTitle("SCFA Marker v1.5")
         self.setMinimumSize(800, 600)
 
         # 添加菜单栏和Help菜单
