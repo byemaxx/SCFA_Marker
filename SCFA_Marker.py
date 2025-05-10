@@ -136,7 +136,7 @@ class SCFA_Marker(QMainWindow):
         self.faild_group = []
 
     def init_ui(self):
-        self.setWindowTitle("SCFA Marker v1.6")
+        self.setWindowTitle("SCFA Marker v1.7")
         self.resize(800, 600)
 
         # 添加菜单栏
@@ -414,8 +414,8 @@ class SCFA_Marker(QMainWindow):
             self.lineEdit_group_list.setPlaceholderText("e.g.: group1, group2, group3")
             self.lineEdit_control_group.setPlaceholderText("Enter control group name")
         else:
-            self.lineEdit_group_list.setPlaceholderText("Available after enabling group splitting")
-            self.lineEdit_control_group.setPlaceholderText("Available after enabling group splitting")
+            self.lineEdit_group_list.setPlaceholderText("Group splitting is disabled")
+            self.lineEdit_control_group.setPlaceholderText("Group splitting is disabled")
 
     def _validate_inputs(self, file_paths=None):
         """验证输入数据"""
@@ -442,14 +442,7 @@ class SCFA_Marker(QMainWindow):
                 QMessageBox.warning(
                     self,
                     'Warning',
-                    'Please enter group list.'
-                )
-                return False
-            if not self.lineEdit_control_group.text():
-                QMessageBox.warning(
-                    self,
-                    'Warning',
-                    'Please enter control group name.'
+                    'Please enter group list when group splitting is enabled.'
                 )
                 return False
         return True
@@ -604,8 +597,9 @@ class SCFA_Marker(QMainWindow):
         control_group = self.lineEdit_control_group.text()
         group_list = self._get_group_list()
         if not group_list:
-            print("No group list input, skip")
+            print("No group list input, skip group processing")
             return {}
+            
         result_dict = {}
         self.faild_group = []
         for sheet_name, df in group_dict.items():
@@ -631,7 +625,7 @@ class SCFA_Marker(QMainWindow):
         Args:
             df (DataFrame): 原始数据框
             group_list (list): 组别列表
-            control_group (str): 控制组名称
+            control_group (str): 控制组名称（可选）
             sheet_name (str): 当前sheet名称
             dilution (float): 稀释倍数
         Returns:
@@ -658,7 +652,7 @@ class SCFA_Marker(QMainWindow):
         Args:
             df (DataFrame): 原始数据框
             individual (str): 组别名称
-            control_group (str): 控制组名称
+            control_group (str): 控制组名称（可选）
             
         Returns:
             DataFrame: 处理后的数据框，如果组别不存在则返回None
@@ -686,12 +680,13 @@ class SCFA_Marker(QMainWindow):
         )
         df_pivot.index.name = None
         
-        # 按控制组优先排序
-        df_pivot = df_pivot[sorted(
-            df_pivot.columns,
-            key=lambda x: control_group in x if x else False,
-            reverse=True
-        )]
+        # 如果有控制组，则按控制组优先排序
+        if control_group:
+            df_pivot = df_pivot[sorted(
+                df_pivot.columns,
+                key=lambda x: control_group in x if x else False,
+                reverse=True
+            )]
         
         return df_pivot
 
